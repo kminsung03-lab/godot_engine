@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+console.log("main.js loaded and executing"); // Verify script loading
+
 // ------------------- Three.js Setup -------------------
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -51,6 +53,7 @@ const planetColors = {
 let currentSystemName = 'Sol'; // Global variable to track current system
 
 function updatePlanetAppearance(systemName) {
+    console.log('Updating planet appearance for:', systemName);
     const color = planetColors[systemName] || 0x808080; // Default to grey if not found
     (planet.material).color.set(color);
     currentSystemName = systemName; // Update global system name
@@ -88,6 +91,7 @@ let playerCredits = 10000;
 function updateCredits(amount) {
     playerCredits += amount;
     document.getElementById('credit-amount').textContent = playerCredits;
+    console.log('Credits updated to:', playerCredits);
 }
 
 // Initial credit display
@@ -95,16 +99,29 @@ updateCredits(0);
 
 // ------------------- UI Panel Management -------------------
 const stockMarketPanel = document.getElementById('stock-market-panel');
+console.log('stockMarketPanel element:', stockMarketPanel);
 const navigationPanel = document.getElementById('navigation-panel');
-const spaceMapPanel = document.getElementById('space-map-panel'); // Added spaceMapPanel
+console.log('navigationPanel element:', navigationPanel);
+const spaceMapPanel = document.getElementById('space-map-panel');
+console.log('spaceMapPanel element:', spaceMapPanel);
+const planetDetailsPanel = document.getElementById('planet-details-panel'); // Added planetDetailsPanel
+console.log('planetDetailsPanel element:', planetDetailsPanel);
 const showStockMarketBtn = document.getElementById('show-stock-market');
+console.log('showStockMarketBtn element:', showStockMarketBtn);
 const showNavigationBtn = document.getElementById('show-navigation');
-const showSpaceMapBtn = document.getElementById('show-space-map'); // Added showSpaceMapBtn
+console.log('showNavigationBtn element:', showNavigationBtn);
+const showSpaceMapBtn = document.getElementById('show-space-map');
+console.log('showSpaceMapBtn element:', showSpaceMapBtn);
+const showPlanetDetailsBtn = document.getElementById('show-planet-details'); // Added showPlanetDetailsBtn
+console.log('showPlanetDetailsBtn element:', showPlanetDetailsBtn);
+
 
 function hideAllPanels() {
+    console.log('Hiding all panels');
     stockMarketPanel.classList.remove('active');
     navigationPanel.classList.remove('active');
-    spaceMapPanel.classList.remove('active'); // Included spaceMapPanel
+    spaceMapPanel.classList.remove('active');
+    planetDetailsPanel.classList.remove('active'); // Included planetDetailsPanel
 }
 
 showStockMarketBtn.addEventListener('click', () => {
@@ -113,6 +130,7 @@ showStockMarketBtn.addEventListener('click', () => {
     stockMarketPanel.classList.add('active');
     console.log('Stock Market panel active:', stockMarketPanel.classList.contains('active'));
 });
+console.log('Event listener attached to showStockMarketBtn');
 
 showNavigationBtn.addEventListener('click', () => {
     console.log('Navigation button clicked');
@@ -120,23 +138,34 @@ showNavigationBtn.addEventListener('click', () => {
     navigationPanel.classList.add('active');
     console.log('Navigation panel active:', navigationPanel.classList.contains('active'));
 });
+console.log('Event listener attached to showNavigationBtn');
 
-// Event listener for the new Space Map button
 showSpaceMapBtn.addEventListener('click', () => {
     console.log('Space Map button clicked');
     hideAllPanels();
     spaceMapPanel.classList.add('active');
     console.log('Space Map panel active:', spaceMapPanel.classList.contains('active'));
 });
+console.log('Event listener attached to showSpaceMapBtn');
+
+showPlanetDetailsBtn.addEventListener('click', () => {
+    console.log('Planet Details button clicked');
+    hideAllPanels();
+    planetDetailsPanel.classList.add('active');
+    console.log('Planet Details panel active:', planetDetailsPanel.classList.contains('active'));
+});
+console.log('Event listener attached to showPlanetDetailsBtn');
 
 // Optionally, hide panels when clicking outside or pressing ESC
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
+        console.log('Escape key pressed, hiding panels');
         hideAllPanels();
     }
 });
+console.log('Event listener attached for Escape key');
 
-// ------------------- Web Components (Placeholders for now) -------------------
+// ------------------- Web Components -------------------
 
 // Define the Stock Market Web Component
 class StockMarket extends HTMLElement {
@@ -383,6 +412,7 @@ class StockMarket extends HTMLElement {
 }
 customElements.define('stock-market', StockMarket);
 
+
 // Define the Space Navigation Web Component
 class SpaceNavigation extends HTMLElement {
     constructor() {
@@ -511,3 +541,110 @@ class SpaceMap extends HTMLElement {
     }
 }
 customElements.define('space-map', SpaceMap);
+
+// Define the Planet Details Web Component
+class PlanetDetails extends HTMLElement {
+    constructor() {
+        super();
+        const shadow = this.attachShadow({ mode: 'open' });
+        shadow.innerHTML = `
+            <style>
+                :host { display: block; padding: 20px; }
+                h3 { color: #00ff00; margin-top: 0; }
+                .planet-image {
+                    width: 100%;
+                    height: 200px;
+                    background-color: #333;
+                    margin-bottom: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.5em;
+                    border: 1px solid #00ff00;
+                }
+                .tabs {
+                    display: flex;
+                    margin-bottom: 10px;
+                }
+                .tab-button {
+                    background-color: #008800;
+                    color: #00ff00;
+                    border: 1px solid #00ff00;
+                    padding: 8px 15px;
+                    cursor: pointer;
+                    border-radius: 4px 4px 0 0;
+                    margin-right: 5px;
+                }
+                .tab-button.active {
+                    background-color: #00bb00;
+                    box-shadow: 0 0 8px #00ff00;
+                }
+                .tab-content {
+                    border: 1px solid #00ff00;
+                    padding: 15px;
+                }
+            </style>
+            <h3>Planet: <span id="planet-name-display">Sol</span></h3>
+            <div class="planet-image">
+                Detailed Planet Image Placeholder
+            </div>
+            <div class="tabs">
+                <button class="tab-button active" data-tab="resources">Resources</button>
+                <button class="tab-button" data-tab="infrastructure">Infrastructure</button>
+                <button class="tab-button" data-tab="research">Research</button>
+                <button class="tab-button" data-tab="defense">Defense</button>
+            </div>
+            <div class="tab-content" id="resources-tab-content">
+                <p>Resource details for this planet.</p>
+            </div>
+            <div class="tab-content" id="infrastructure-tab-content" style="display:none;">
+                <p>Infrastructure development options.</p>
+            </div>
+            <div class="tab-content" id="research-tab-content" style="display:none;">
+                <p>Research projects and progress.</p>
+            </div>
+            <div class="tab-content" id="defense-tab-content" style="display:none;">
+                <p>Planetary defense systems.</p>
+            </div>
+        `;
+        this.planetNameDisplay = shadow.getElementById('planet-name-display');
+        this.tabButtons = shadow.querySelectorAll('.tab-button');
+        this.tabContents = {
+            resources: shadow.getElementById('resources-tab-content'),
+            infrastructure: shadow.getElementById('infrastructure-tab-content'),
+            research: shadow.getElementById('research-tab-content'),
+            defense: shadow.getElementById('defense-tab-content'),
+        };
+
+        this.tabButtons.forEach(button => {
+            button.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+        });
+
+        this.updatePlanetDetails(currentSystemName); // Initial display
+    }
+
+    updatePlanetDetails(planetName) {
+        this.planetNameDisplay.textContent = planetName;
+        // In a real game, load actual image and data based on planetName
+        console.log(`Updating PlanetDetails for: ${planetName}`);
+    }
+
+    switchTab(tabName) {
+        this.tabButtons.forEach(button => {
+            if (button.dataset.tab === tabName) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+        });
+
+        for (const key in this.tabContents) {
+            if (key === tabName) {
+                this.tabContents[key].style.display = 'block';
+            } else {
+                this.tabContents[key].style.display = 'none';
+            }
+        }
+    }
+}
+customElements.define('planet-details', PlanetDetails);
