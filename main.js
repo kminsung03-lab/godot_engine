@@ -108,19 +108,25 @@ function hideAllPanels() {
 }
 
 showStockMarketBtn.addEventListener('click', () => {
+    console.log('Stock Market button clicked');
     hideAllPanels();
     stockMarketPanel.classList.add('active');
+    console.log('Stock Market panel active:', stockMarketPanel.classList.contains('active'));
 });
 
 showNavigationBtn.addEventListener('click', () => {
+    console.log('Navigation button clicked');
     hideAllPanels();
     navigationPanel.classList.add('active');
+    console.log('Navigation panel active:', navigationPanel.classList.contains('active'));
 });
 
 // Event listener for the new Space Map button
 showSpaceMapBtn.addEventListener('click', () => {
+    console.log('Space Map button clicked');
     hideAllPanels();
     spaceMapPanel.classList.add('active');
+    console.log('Space Map panel active:', spaceMapPanel.classList.contains('active'));
 });
 
 // Optionally, hide panels when clicking outside or pressing ESC
