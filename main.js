@@ -96,12 +96,15 @@ updateCredits(0);
 // ------------------- UI Panel Management -------------------
 const stockMarketPanel = document.getElementById('stock-market-panel');
 const navigationPanel = document.getElementById('navigation-panel');
+const spaceMapPanel = document.getElementById('space-map-panel'); // Added spaceMapPanel
 const showStockMarketBtn = document.getElementById('show-stock-market');
 const showNavigationBtn = document.getElementById('show-navigation');
+const showSpaceMapBtn = document.getElementById('show-space-map'); // Added showSpaceMapBtn
 
 function hideAllPanels() {
     stockMarketPanel.classList.remove('active');
     navigationPanel.classList.remove('active');
+    spaceMapPanel.classList.remove('active'); // Included spaceMapPanel
 }
 
 showStockMarketBtn.addEventListener('click', () => {
@@ -112,6 +115,12 @@ showStockMarketBtn.addEventListener('click', () => {
 showNavigationBtn.addEventListener('click', () => {
     hideAllPanels();
     navigationPanel.classList.add('active');
+});
+
+// Event listener for the new Space Map button
+showSpaceMapBtn.addEventListener('click', () => {
+    hideAllPanels();
+    spaceMapPanel.classList.add('active');
 });
 
 // Optionally, hide panels when clicking outside or pressing ESC
