@@ -380,7 +380,8 @@ class StockMarket extends HTMLElement {
             ctx.fill();
         });
     }
-
+}
+customElements.define('stock-market', StockMarket);
 
 // Define the Space Navigation Web Component
 class SpaceNavigation extends HTMLElement {
