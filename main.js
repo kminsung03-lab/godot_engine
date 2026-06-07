@@ -307,3 +307,64 @@ class SpaceNavigation extends HTMLElement {
     }
 }
 customElements.define('space-navigation', SpaceNavigation);
+
+// Define the Space Map Web Component
+class SpaceMap extends HTMLElement {
+    constructor() {
+        super();
+        const shadow = this.attachShadow({ mode: 'open' });
+        shadow.innerHTML = `
+            <style>
+                :host { display: block; width: 100%; height: 100%; }
+                canvas {
+                    width: 100%;
+                    height: 100%;
+                    border: 1px solid #00ff00;
+                    background-color: rgba(0, 0, 0, 0.5);
+                }
+            </style>
+            <canvas id="space-map-canvas"></canvas>
+        `;
+        this.canvas = shadow.getElementById('space-map-canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.systems = [
+            { name: 'Sol', x: 200, y: 150 },
+            { name: 'Alpha Centauri', x: 500, y: 250 },
+            { name: 'Sirius', x: 100, y: 400 },
+            { name: 'Proxima Centauri', x: 300, y: 50 },
+            { name: 'Kepler-186f', x: 600, y: 100 }
+        ];
+        this.drawMap();
+
+        // Handle canvas resize
+        new ResizeObserver(() => this.drawMap()).observe(this.canvas);
+    }
+
+    drawMap() {
+        // Clear canvas
+        this.canvas.width = this.canvas.offsetWidth;
+        this.canvas.height = this.canvas.offsetHeight;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Draw systems
+        this.systems.forEach(system => {
+            this.ctx.beginPath();
+            this.ctx.arc(system.x, system.y, 5, 0, Math.PI * 2);
+            this.ctx.fillStyle = system.name === currentSystemName ? '#00ffff' : '#00ff00'; // Highlight current system
+            this.ctx.fill();
+            this.ctx.closePath();
+
+            this.ctx.fillStyle = '#00ff00';
+            this.ctx.fillText(system.name, system.x + 10, system.y + 5);
+        });
+
+        // Draw connections (placeholder)
+        this.ctx.strokeStyle = '#004400';
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.systems[0].x, this.systems[0].y);
+        this.ctx.lineTo(this.systems[1].x, this.systems[1].y);
+        this.ctx.stroke();
+    }
+}
+customElements.define('space-map', SpaceMap);
