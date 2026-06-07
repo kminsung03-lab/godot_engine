@@ -9,26 +9,27 @@ This document outlines the development of a web-based prototype for an interstel
     *   Clean, modern, and responsive UI design.
     *   Incorporation of 3D elements for space environment (ships, planets).
 *   **Core Features:**
-    *   Basic spaceship cockpit view.
+    *   Dynamic 3D background displaying the currently docked planet.
+    *   Interactive space map for location visualization.
+    *   Button-triggered Stock Market and Navigation panels.
+    *   Enhanced Stock Market with stock charts and "exploration" features.
     *   Simulated interstellar stock market interface.
-    *   Navigation/travel placeholder.
     *   User credit display.
 
-## Current Plan for Prototype v0.1
+## Current Plan for Prototype v0.2 (Enhancements)
 
-1.  **Project Setup:** Initialize basic HTML, CSS, JavaScript files and set up Three.js.
-2.  **Base UI Structure (HTML/CSS):** Create the main layout for the cockpit view, incorporating areas for 3D display, stock market, and navigation.
-3.  **3D Space Environment (Three.js):**
-    *   Set up a Three.js scene, camera, and renderer.
-    *   Add a basic 3D model for the spaceship interior/cockpit or a simple placeholder.
-    *   Create a starfield background and a simple rotating planet.
-4.  **Stock Market Web Component:**
-    *   Develop a custom element (`<stock-market>`) to display interstellar stock data.
-    *   Include placeholder stock names, prices, and buy/sell buttons.
-    *   Implement basic (placeholder) logic for buying/selling and updating credits.
-5.  **Navigation Web Component:**
-    *   Develop a custom element (`<space-navigation>`) for displaying current location and a "jump" button.
-6.  **User Credits Display:** A simple UI element to show the player's current credits.
-7.  **Integration:** Combine all components into `index.html` and `main.js`.
-8.  **Initial Styling:** Apply modern CSS for a clean, futuristic look, ensuring responsiveness.
-9.  **Verification:** Test basic functionality and visual layout in the browser.
+1.  **UI Refactoring for Panel Management:**
+    *   Modify `index.html` to add buttons for "Stock Market" and "Navigation".
+    *   Implement JavaScript logic to show/hide corresponding panels.
+    *   Adjust `style.css` for panel positioning and visual styling (e.g., modals or side panels).
+2.  **Dynamic Planet Background (Three.js):**
+    *   Modify `main.js` to load and display a textured sphere representing the current planet.
+    *   Update the planet texture/appearance based on the `currentSystem` in `SpaceNavigation`.
+3.  **Interactive Space Map (Three.js/HTML Canvas):**
+    *   Integrate a 2D or simple 3D map showing star systems and player's current location.
+    *   Make the map interactive (e.g., click on systems).
+4.  **Stock Market Chart Feature:**
+    *   Enhance `StockMarket` Web Component to display a simple line chart for selected stock.
+    *   Implement placeholder "exploration" features (e.g., news feed, company profile).
+    *   Add styling for the chart and exploration features.
+5.  **GitHub Automation:** Ensure `git add`, `git commit`, `git push` are performed after significant task completion.

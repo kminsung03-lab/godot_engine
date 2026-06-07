@@ -32,12 +32,32 @@ starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVert
 const stars = new THREE.Points(starsGeometry, starsMaterial);
 scene.add(stars);
 
-// Create a rotating planet
+// Dynamic Planet
 const planetGeometry = new THREE.SphereGeometry(1, 32, 32);
-const planetMaterial = new THREE.MeshLambertMaterial({ color: 0x2233ff }); // Lambert material for lighting effect
+const planetMaterial = new THREE.MeshLambertMaterial({ color: 0x2233ff }); // Default color
 const planet = new THREE.Mesh(planetGeometry, planetMaterial);
 planet.position.set(3, 0, -5); // Position the planet
 scene.add(planet);
+
+// Mapping of systems to planet colors
+const planetColors = {
+    'Sol': 0x0077ff, // Blue Earth-like
+    'Alpha Centauri': 0xffa500, // Orange
+    'Sirius': 0xffffcc, // White/Yellow
+    'Proxima Centauri': 0xff0000, // Red
+    'Kepler-186f': 0x00ff00 // Green
+};
+
+let currentSystemName = 'Sol'; // Global variable to track current system
+
+function updatePlanetAppearance(systemName) {
+    const color = planetColors[systemName] || 0x808080; // Default to grey if not found
+    (planet.material).color.set(color);
+    currentSystemName = systemName; // Update global system name
+}
+
+// Initial planet appearance
+updatePlanetAppearance(currentSystemName);
 
 camera.position.z = 5;
 
@@ -72,6 +92,34 @@ function updateCredits(amount) {
 
 // Initial credit display
 updateCredits(0);
+
+// ------------------- UI Panel Management -------------------
+const stockMarketPanel = document.getElementById('stock-market-panel');
+const navigationPanel = document.getElementById('navigation-panel');
+const showStockMarketBtn = document.getElementById('show-stock-market');
+const showNavigationBtn = document.getElementById('show-navigation');
+
+function hideAllPanels() {
+    stockMarketPanel.classList.remove('active');
+    navigationPanel.classList.remove('active');
+}
+
+showStockMarketBtn.addEventListener('click', () => {
+    hideAllPanels();
+    stockMarketPanel.classList.add('active');
+});
+
+showNavigationBtn.addEventListener('click', () => {
+    hideAllPanels();
+    navigationPanel.classList.add('active');
+});
+
+// Optionally, hide panels when clicking outside or pressing ESC
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        hideAllPanels();
+    }
+});
 
 // ------------------- Web Components (Placeholders for now) -------------------
 
