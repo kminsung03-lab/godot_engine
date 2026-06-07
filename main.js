@@ -428,7 +428,7 @@ class SpaceNavigation extends HTMLElement {
 
         this.currentSystem = 'Sol';
         this.currentSystemDisplay.textContent = this.currentSystem;
-        updatePlanetAppearance(this.currentSystem); // Call to update initial planet appearance
+        // updatePlanetAppearance(this.currentSystem); // Temporarily commented out for debugging
 
         this.jumpButton.onclick = () => this.handleJump();
     }
@@ -439,7 +439,7 @@ class SpaceNavigation extends HTMLElement {
             console.log(`Jumping from ${this.currentSystem} to ${destination}...`);
             this.currentSystem = destination;
             this.currentSystemDisplay.textContent = this.currentSystem;
-            updatePlanetAppearance(this.currentSystem); // Update planet appearance after jump
+            // updatePlanetAppearance(this.currentSystem); // Temporarily commented out for debugging
             alert(`Arrived at ${destination}!`);
             // In a real game, this would trigger more complex logic
             // like updating market data based on new location, new missions, etc.
