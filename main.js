@@ -148,6 +148,52 @@ class StockMarket extends HTMLElement {
                     background-color: #00bb00;
                     box-shadow: 0 0 5px #00ff00;
                 }
+                .stock-row:hover {
+                    background-color: rgba(0, 200, 0, 0.1);
+                    cursor: pointer;
+                }
+                .stock-detail-panel {
+                    display: none; /* Hidden by default */
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.9);
+                    z-index: 100;
+                    padding: 20px;
+                    box-sizing: border-box;
+                    flex-direction: column;
+                }
+                .stock-detail-panel.active {
+                    display: flex;
+                }
+                .close-detail {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background: none;
+                    border: none;
+                    color: #00ff00;
+                    font-size: 1.5em;
+                    cursor: pointer;
+                }
+                .chart-container {
+                    flex-grow: 1;
+                    margin-top: 20px;
+                    border: 1px solid #00ff00;
+                    background-color: rgba(0, 0, 0, 0.5);
+                }
+                .exploration-features {
+                    margin-top: 20px;
+                    display: flex;
+                    gap: 20px;
+                }
+                .exploration-features div {
+                    flex: 1;
+                    padding: 10px;
+                    border: 1px dashed #008800;
+                }
             </style>
             <table>
                 <thead>
@@ -161,14 +207,44 @@ class StockMarket extends HTMLElement {
                     <!-- Stock items will be injected here -->
                 </tbody>
             </table>
+            <div id="stock-detail-panel" class="stock-detail-panel">
+                <button class="close-detail" id="close-detail-panel">X</button>
+                <h3><span id="detail-stock-name"></span> Chart</h3>
+                <div class="chart-container">
+                    <canvas id="stock-chart" width="400" height="200"></canvas>
+                </div>
+                <div class="exploration-features">
+                    <div>
+                        <h4>News Feed</h4>
+                        <p id="news-content">Latest news for <span id="news-stock-name"></span>...</p>
+                    </div>
+                    <div>
+                        <h4>Company Profile</h4>
+                        <p id="profile-content">Profile of <span id="profile-stock-name"></span>...</p>
+                    </div>
+                </div>
+            </div>
         `;
         this.stockList = shadow.getElementById('stock-list');
+        this.stockDetailPanel = shadow.getElementById('stock-detail-panel');
+        this.closeDetailPanelBtn = shadow.getElementById('close-detail-panel');
+        this.detailStockName = shadow.getElementById('detail-stock-name');
+        this.newsStockName = shadow.getElementById('news-stock-name');
+        this.profileStockName = shadow.getElementById('profile-stock-name');
+        this.stockChartCanvas = shadow.getElementById('stock-chart');
+        this.stockChartCtx = this.stockChartCanvas.getContext('2d');
+
         this.stocks = [
-            { id: 'SPACEX-A', name: 'SpaceX Alpha', price: 100.00, quantity: 0 },
-            { id: 'ORION-B', name: 'Orion Beta', price: 50.00, quantity: 0 },
-            { id: 'GALAX-C', name: 'Galactic Corp', price: 200.00, quantity: 0 },
-            { id: 'QUANTUM-D', name: 'Quantum Dynamics', price: 150.00, quantity: 0 }
+            { id: 'SPACEX-A', name: 'SpaceX Alpha', price: 100.00, quantity: 0, history: [] },
+            { id: 'ORION-B', name: 'Orion Beta', price: 50.00, quantity: 0, history: [] },
+            { id: 'GALAX-C', name: 'Galactic Corp', price: 200.00, quantity: 0, history: [] },
+            { id: 'QUANTUM-D', name: 'Quantum Dynamics', price: 150.00, quantity: 0, history: [] }
         ];
+
+        this.closeDetailPanelBtn.addEventListener('click', () => {
+            this.stockDetailPanel.classList.remove('active');
+        });
+
         this.renderStocks();
         this.startPriceFluctuation();
     }
@@ -177,6 +253,8 @@ class StockMarket extends HTMLElement {
         this.stockList.innerHTML = '';
         this.stocks.forEach(stock => {
             const row = document.createElement('tr');
+            row.classList.add('stock-row'); // Add class for styling and event listener
+            row.dataset.id = stock.id;
             row.innerHTML = `
                 <td>${stock.name}</td>
                 <td id="price-${stock.id}">${stock.price.toFixed(2)}</td>
@@ -189,6 +267,7 @@ class StockMarket extends HTMLElement {
             this.stockList.appendChild(row);
         });
         this.addEventListeners();
+        this.addStockRowClickListeners();
     }
 
     startPriceFluctuation() {
@@ -196,6 +275,8 @@ class StockMarket extends HTMLElement {
             this.stocks.forEach(stock => {
                 const fluctuation = (Math.random() - 0.5) * 10; // -5 to +5
                 stock.price = Math.max(1, stock.price + fluctuation); // Ensure price doesn't go below 1
+                stock.history.push(stock.price); // Store history for chart
+                if (stock.history.length > 20) stock.history.shift(); // Keep last 20 points
                 this.updateStockDisplay(stock);
             });
         }, 3000); // Update prices every 3 seconds
@@ -203,43 +284,87 @@ class StockMarket extends HTMLElement {
 
     addEventListeners() {
         this.shadowRoot.querySelectorAll('.buy-btn').forEach(button => {
-            button.onclick = (e) => this.handleBuy(e.target.dataset.id);
+            button.onclick = (e) => {
+                e.stopPropagation(); // Prevent row click from firing
+                this.handleBuy(e.target.dataset.id);
+            };
         });
         this.shadowRoot.querySelectorAll('.sell-btn').forEach(button => {
-            button.onclick = (e) => this.handleSell(e.target.dataset.id);
+            button.onclick = (e) => {
+                e.stopPropagation(); // Prevent row click from firing
+                this.handleSell(e.target.dataset.id);
+            };
         });
     }
 
-    handleBuy(stockId) {
+    addStockRowClickListeners() {
+        this.shadowRoot.querySelectorAll('.stock-row').forEach(row => {
+            row.addEventListener('click', (e) => {
+                this.showStockDetails(e.currentTarget.dataset.id);
+            });
+        });
+    }
+
+    showStockDetails(stockId) {
         const stock = this.stocks.find(s => s.id === stockId);
-        if (stock && playerCredits >= stock.price) {
-            updateCredits(-stock.price);
-            stock.quantity++;
-            this.updateStockDisplay(stock);
-            console.log(`Bought ${stock.name}. New quantity: ${stock.quantity}`);
-        } else {
-            console.log('Cannot buy: Insufficient credits or stock not found.');
+        if (stock) {
+            this.detailStockName.textContent = stock.name;
+            this.newsStockName.textContent = stock.name;
+            this.profileStockName.textContent = stock.name;
+            // Placeholder for news and profile content
+            this.shadowRoot.getElementById('news-content').textContent = `Breaking news from ${stock.name}: New warp core developed!`;
+            this.shadowRoot.getElementById('profile-content').textContent = `CEO: Jane Doe. Specializes in ${stock.name === 'SpaceX Alpha' ? 'interstellar transport' : 'quantum computing'}.`;
+
+            this.drawChart(stock);
+            this.stockDetailPanel.classList.add('active');
         }
     }
 
-    handleSell(stockId) {
-        const stock = this.stocks.find(s => s.id === stockId);
-        if (stock && stock.quantity > 0) {
-            updateCredits(stock.price);
-            stock.quantity--;
-            this.updateStockDisplay(stock);
-            console.log(`Sold ${stock.name}. New quantity: ${stock.quantity}`);
-        } else {
-            console.log('Cannot sell: No stock owned or stock not found.');
-        }
-    }
+    drawChart(stock) {
+        const canvas = this.stockChartCanvas;
+        const ctx = this.stockChartCtx;
+        const history = stock.history;
 
-    updateStockDisplay(stock) {
-        this.shadowRoot.getElementById(`price-${stock.id}`).textContent = stock.price.toFixed(2);
-        this.shadowRoot.getElementById(`owned-${stock.id}`).textContent = stock.quantity;
+        // Clear canvas
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (history.length < 2) return;
+
+        const maxPrice = Math.max(...history);
+        const minPrice = Math.min(...history);
+        const priceRange = maxPrice - minPrice;
+
+        const xStep = canvas.width / (history.length - 1);
+        const yScaler = priceRange === 0 ? 0 : (canvas.height - 20) / priceRange; // 20px padding
+
+        ctx.beginPath();
+        ctx.strokeStyle = '#00ffff';
+        ctx.lineWidth = 2;
+
+        history.forEach((price, index) => {
+            const x = index * xStep;
+            const y = canvas.height - 10 - (price - minPrice) * yScaler; // 10px bottom padding
+
+            if (index === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        });
+        ctx.stroke();
+
+        // Draw points
+        ctx.fillStyle = '#00ff00';
+        history.forEach((price, index) => {
+            const x = index * xStep;
+            const y = canvas.height - 10 - (price - minPrice) * yScaler;
+            ctx.beginPath();
+            ctx.arc(x, y, 3, 0, Math.PI * 2);
+            ctx.fill();
+        });
     }
-}
-customElements.define('stock-market', StockMarket);
 
 
 // Define the Space Navigation Web Component
