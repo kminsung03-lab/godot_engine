@@ -1,1 +1,100 @@
-/* Add styles here */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    color: #00ff00; /* Retro futuristic green */
+    background-color: #0d0d0d;
+    overflow: hidden;
+}
+
+#app {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+#three-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+#ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.4)); /* Semi-transparent overlay */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #004400;
+    padding-bottom: 10px;
+}
+
+h1 {
+    margin: 0;
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff00;
+}
+
+#credits {
+    font-size: 1.2em;
+    color: #00ffff;
+    text-shadow: 0 0 3px #00ffff;
+}
+
+main {
+    display: flex;
+    flex-grow: 1;
+    gap: 20px;
+}
+
+section {
+    background-color: rgba(0, 50, 0, 0.3);
+    border: 1px solid #00ff00;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    padding: 15px;
+    border-radius: 8px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+section h2 {
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff00;
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed #008800;
+}
+
+/* Basic button style */
+button {
+    background-color: #008800;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    background-color: #00bb00;
+    box-shadow: 0 0 8px #00ff00;
+}
